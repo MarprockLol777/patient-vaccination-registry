@@ -1,0 +1,6 @@
+@patient_vaccination_registry.API_HostAddress = http://localhost:5031
+
+GET {{patient_vaccination_registry.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
