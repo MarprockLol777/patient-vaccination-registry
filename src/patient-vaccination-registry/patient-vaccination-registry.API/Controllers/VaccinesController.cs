@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using patient_vaccination_registry.API.Models.Dtos;
 using patient_vaccination_registry.API.Models.Entities;
 
 namespace patient_vaccination_registry.API.Controllers
@@ -8,7 +9,6 @@ namespace patient_vaccination_registry.API.Controllers
     [Route("api/[controller]")]
     public class VaccinesController : ControllerBase 
     {
-
         private static readonly List<Vaccine> _vaccines = new List<Vaccine>
         {
             new Vaccine { Id = 1, Name = "Pfizer-BioNTech", Manufacturer = "Pfizer", Batch = "PF001", RequiredDoses = 2, IsActive = true },
@@ -19,7 +19,8 @@ namespace patient_vaccination_registry.API.Controllers
         [HttpGet] // GET: api/vaccines
         public ActionResult<IEnumerable<Vaccine>> GetAll()
         {
-            return Ok(_vaccines);
+            var vaccines = _vaccines.ToList();
+            return Ok(vaccines);
         }
 
         [HttpGet("{id}")] // GET: api/vaccines/5
@@ -34,27 +35,37 @@ namespace patient_vaccination_registry.API.Controllers
         }
 
         [HttpPost] // POST: api/vaccines
-        public ActionResult<Vaccine> Create(Vaccine vaccine)
+        public ActionResult Create(CreateVaccineDto request)
         {
-            if (string.IsNullOrWhiteSpace(vaccine.Name))
+            if (string.IsNullOrWhiteSpace(request.Name))
             {
                 return BadRequest("Name of vaccine is required.");
             }
 
-            int newId = _vaccines.Any() ? _vaccines.Max(v => v.Id) + 1 : 1;
-            vaccine.Id = newId;
-            vaccine.IsActive = true;
+            var newId = _vaccines.Any() ? _vaccines.Max(v => v.Id) + 1 : 1;
+
+            var vaccine = new Vaccine
+            {
+                Id = newId,
+                Name = request.Name,
+                Manufacturer = request.Manufacturer,
+                Batch = request.Batch,
+                RequiredDoses = request.RequiredDoses,
+                IsActive = true
+            };
 
             _vaccines.Add(vaccine);
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = vaccine.Id },
-                vaccine
-            );
+            return Ok(new
+            {
+                name = vaccine.Name,
+                manufacturer = vaccine.Manufacturer,
+                batch = vaccine.Batch,
+                requiredDoses = vaccine.RequiredDoses
+            });
         }
 
         [HttpPut("{id}")] // PUT: api/vaccines/5
-        public IActionResult Update(int id, Vaccine vaccine)
+        public IActionResult Update(int id, UpdateVaccineDto request)
         {
             var existing = _vaccines.FirstOrDefault(v => v.Id == id);
             if (existing == null)
@@ -62,13 +73,20 @@ namespace patient_vaccination_registry.API.Controllers
                 return NotFound();
             }
 
-            existing.Name = vaccine.Name;
-            existing.Manufacturer = vaccine.Manufacturer;
-            existing.Batch = vaccine.Batch;
-            existing.RequiredDoses = vaccine.RequiredDoses;
-            existing.IsActive = vaccine.IsActive;
+            existing.Name = request.Name;
+            existing.Manufacturer = request.Manufacturer;
+            existing.Batch = request.Batch;
+            existing.RequiredDoses = request.RequiredDoses;
+            existing.IsActive = request.IsActive;
 
-            return NoContent();
+            return Ok(new
+            {
+                name = existing.Name,
+                manufacturer = existing.Manufacturer,
+                batch = existing.Batch,
+                requiredDoses = existing.RequiredDoses,
+                isActive = existing.IsActive
+            });
         }
 
         [HttpDelete("{id}")] // DELETE: api/vaccines/5

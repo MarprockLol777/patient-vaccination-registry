@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using patient_vaccination_registry.API.Models.Dtos;
 using patient_vaccination_registry.API.Models.Entities;
 
 namespace patient_vaccination_registry.API.Controllers
@@ -18,7 +19,8 @@ namespace patient_vaccination_registry.API.Controllers
         [HttpGet] // GET: api/drives
         public ActionResult<IEnumerable<Drive>> GetAll()
         {
-            return Ok(_drives);
+            var drives = _drives.ToList();
+            return Ok(drives);
         }
 
         [HttpGet("{id}")] // GET: api/drives/5
@@ -33,27 +35,35 @@ namespace patient_vaccination_registry.API.Controllers
         }
 
         [HttpPost] // POST: api/drives
-        public ActionResult<Drive> Create(Drive drive)
+        public ActionResult Create(CreateDriveDto request)
         {
-            if (string.IsNullOrWhiteSpace(drive.Name))
+            if (string.IsNullOrWhiteSpace(request.Name))
             {
                 return BadRequest("Name of drive is required.");
             }
 
-            int newId = _drives.Any() ? _drives.Max(d => d.Id) + 1 : 1;
-            drive.Id = newId;
-            drive.IsActive = true;
+            var newId = _drives.Any() ? _drives.Max(d => d.Id) + 1 : 1;
+
+            var drive = new Drive
+            {
+                Id = newId,
+                Name = request.Name,
+                Date = request.Date,
+                Location = request.Location,
+                IsActive = true
+            };
 
             _drives.Add(drive);
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = drive.Id },
-                drive
-            );
+            return Ok(new
+            {
+                name = drive.Name,
+                date = drive.Date,
+                location = drive.Location
+            });
         }
 
         [HttpPut("{id}")] // PUT: api/drives/5
-        public IActionResult Update(int id, Drive drive)
+        public IActionResult Update(int id, UpdateDriveDto request)
         {
             var existing = _drives.FirstOrDefault(d => d.Id == id);
             if (existing == null)
@@ -61,12 +71,18 @@ namespace patient_vaccination_registry.API.Controllers
                 return NotFound();
             }
 
-            existing.Name = drive.Name;
-            existing.Date = drive.Date;
-            existing.Location = drive.Location;
-            existing.IsActive = drive.IsActive;
+            existing.Name = request.Name;
+            existing.Date = request.Date;
+            existing.Location = request.Location;
+            existing.IsActive = request.IsActive;
 
-            return NoContent();
+            return Ok(new
+            {
+                name = existing.Name,
+                date = existing.Date,
+                location = existing.Location,
+                isActive = existing.IsActive
+            });
         }
 
         [HttpDelete("{id}")] // DELETE: api/drives/5
