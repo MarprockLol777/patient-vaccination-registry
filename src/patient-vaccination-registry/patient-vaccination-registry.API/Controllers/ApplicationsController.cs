@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using patient_vaccination_registry.API.Models.Dtos;
 using patient_vaccination_registry.API.Models.Entities;
 
 
@@ -18,7 +19,8 @@ namespace patient_vaccination_registry.API.Controllers
         [HttpGet] // GET: api/applications
         public ActionResult<IEnumerable<Application>> GetAll()
         {
-            return Ok(_applications);
+            var applications = _applications.ToList();
+            return Ok(applications);
         }
 
         [HttpGet("{id}")] // GET: api/applications/5
@@ -33,34 +35,46 @@ namespace patient_vaccination_registry.API.Controllers
         }
 
         [HttpPost] // POST: api/applications
-        public ActionResult<Application> Create(Application application)
+        public ActionResult Create(CreateApplicationDto request)
         {
-            if (application.PersonId <= 0)
+            if (request.PersonId <= 0)
             {
                 return BadRequest("PersonId must be provided and positive.");
             }
-            if (application.VaccineId <= 0)
+            if (request.VaccineId <= 0)
             {
                 return BadRequest("VaccineId must be provided and positive.");
             }
-            if (application.DriveId <= 0)
+            if (request.DriveId <= 0)
             {
                 return BadRequest("DriveId must be provided and positive.");
             }
 
-            int newId = _applications.Any() ? _applications.Max(a => a.Id) + 1 : 1;
-            application.Id = newId;
+            var newId = _applications.Any() ? _applications.Max(a => a.Id) + 1 : 1;
+
+            var application = new Application
+            {
+                Id = newId,
+                PersonId = request.PersonId,
+                VaccineId = request.VaccineId,
+                DriveId = request.DriveId,
+                ApplicationDate = request.ApplicationDate,
+                DoseNumber = request.DoseNumber
+            };
 
             _applications.Add(application);
-            return CreatedAtAction(
-                nameof(GetById),
-                new { id = application.Id },
-                application
-            );
+            return Ok(new
+            {
+                personId = application.PersonId,
+                vaccineId = application.VaccineId,
+                driveId = application.DriveId,
+                applicationDate = application.ApplicationDate,
+                doseNumber = application.DoseNumber
+            });
         }
 
         [HttpPut("{id}")] // PUT: api/applications/5
-        public IActionResult Update(int id, Application application)
+        public IActionResult Update(int id, UpdateApplicationDto request)
         {
             var existing = _applications.FirstOrDefault(a => a.Id == id);
             if (existing == null)
@@ -68,13 +82,33 @@ namespace patient_vaccination_registry.API.Controllers
                 return NotFound();
             }
 
-            existing.PersonId = application.PersonId;
-            existing.VaccineId = application.VaccineId;
-            existing.DriveId = application.DriveId;
-            existing.ApplicationDate = application.ApplicationDate;
-            existing.DoseNumber = application.DoseNumber;
+            if (request.PersonId <= 0)
+            {
+                return BadRequest("PersonId must be provided and positive.");
+            }
+            if (request.VaccineId <= 0)
+            {
+                return BadRequest("VaccineId must be provided and positive.");
+            }
+            if (request.DriveId <= 0)
+            {
+                return BadRequest("DriveId must be provided and positive.");
+            }
 
-            return NoContent();
+            existing.PersonId = request.PersonId;
+            existing.VaccineId = request.VaccineId;
+            existing.DriveId = request.DriveId;
+            existing.ApplicationDate = request.ApplicationDate;
+            existing.DoseNumber = request.DoseNumber;
+
+            return Ok(new
+            {
+                personId = existing.PersonId,
+                vaccineId = existing.VaccineId,
+                driveId = existing.DriveId,
+                applicationDate = existing.ApplicationDate,
+                doseNumber = existing.DoseNumber
+            });
         }
 
         [HttpDelete("{id}")] // DELETE: api/applications/5
