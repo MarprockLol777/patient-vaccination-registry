@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using patient_vaccination_registry.API.DATA;
 using patient_vaccination_registry.API.Models.Dtos;
 using patient_vaccination_registry.API.Models.Entities;
 
@@ -9,24 +10,24 @@ namespace patient_vaccination_registry.API.Controllers
     [Route("api/[controller]")]
     public class ApplicationsController : ControllerBase
     {
-        private static readonly List<Application> _applications = new List<Application>
+        private readonly DataContext _context;
+
+        public ApplicationsController(DataContext context)
         {
-            new Application { Id = 1, PersonId = 1, VaccineId = 1, DriveId = 1, ApplicationDate = new DateTime(2026, 6, 20), DoseNumber = 1 },
-            new Application { Id = 2, PersonId = 2, VaccineId = 2, DriveId = 1, ApplicationDate = new DateTime(2026, 6, 20), DoseNumber = 1 },
-            new Application { Id = 3, PersonId = 1, VaccineId = 1, DriveId = 2, ApplicationDate = new DateTime(2026, 6, 25), DoseNumber = 2 }
-        };
+            _context = context;
+        }
 
         [HttpGet] // GET: api/applications
         public ActionResult<IEnumerable<Application>> GetAll()
         {
-            var applications = _applications.ToList();
+            var applications = _context.Applications.ToList();
             return Ok(applications);
         }
 
         [HttpGet("{id}")] // GET: api/applications/5
         public ActionResult<Application> GetById(int id)
         {
-            var application = _applications.FirstOrDefault(a => a.Id == id);
+            var application = _context.Applications.FirstOrDefault(a => a.Id == id);
             if (application == null)
             {
                 return NotFound();
@@ -35,7 +36,7 @@ namespace patient_vaccination_registry.API.Controllers
         }
 
         [HttpPost] // POST: api/applications
-        public ActionResult Create(CreateApplicationDto request)
+        public ActionResult<int> Create(CreateApplicationDto request)
         {
             if (request.PersonId <= 0)
             {
@@ -50,11 +51,8 @@ namespace patient_vaccination_registry.API.Controllers
                 return BadRequest("DriveId must be provided and positive.");
             }
 
-            var newId = _applications.Any() ? _applications.Max(a => a.Id) + 1 : 1;
-
             var application = new Application
             {
-                Id = newId,
                 PersonId = request.PersonId,
                 VaccineId = request.VaccineId,
                 DriveId = request.DriveId,
@@ -62,21 +60,15 @@ namespace patient_vaccination_registry.API.Controllers
                 DoseNumber = request.DoseNumber
             };
 
-            _applications.Add(application);
-            return Ok(new
-            {
-                personId = application.PersonId,
-                vaccineId = application.VaccineId,
-                driveId = application.DriveId,
-                applicationDate = application.ApplicationDate,
-                doseNumber = application.DoseNumber
-            });
+            _context.Applications.Add(application);
+            _context.SaveChanges();
+            return Ok(new { id = application.Id });
         }
 
         [HttpPut("{id}")] // PUT: api/applications/5
         public IActionResult Update(int id, UpdateApplicationDto request)
         {
-            var existing = _applications.FirstOrDefault(a => a.Id == id);
+            var existing = _context.Applications.FirstOrDefault(a => a.Id == id);
             if (existing == null)
             {
                 return NotFound();
@@ -101,26 +93,24 @@ namespace patient_vaccination_registry.API.Controllers
             existing.ApplicationDate = request.ApplicationDate;
             existing.DoseNumber = request.DoseNumber;
 
-            return Ok(new
-            {
-                personId = existing.PersonId,
-                vaccineId = existing.VaccineId,
-                driveId = existing.DriveId,
-                applicationDate = existing.ApplicationDate,
-                doseNumber = existing.DoseNumber
-            });
+            _context.Applications.Update(existing);
+            _context.SaveChanges();
+
+            return NoContent();
         }
 
         [HttpDelete("{id}")] // DELETE: api/applications/5
         public IActionResult Delete(int id)
         {
-            var existing = _applications.FirstOrDefault(a => a.Id == id);
+            var existing = _context.Applications.FirstOrDefault(a => a.Id == id);
             if (existing == null)
             {
                 return NotFound();
             }
 
-            _applications.Remove(existing);
+            _context.Applications.Remove(existing);
+            _context.SaveChanges();
+
             return NoContent();
         }
     }
