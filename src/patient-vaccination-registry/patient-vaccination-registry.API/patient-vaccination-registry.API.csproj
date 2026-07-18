@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\..\Downloads\MyProyectOfP2\patient-vaccination-registry.Infrastructure\patient-vaccination-registry.Infrastructure.csproj" />
+    <ProjectReference Include="..\patient-vaccination-registry.Infrastructure\patient-vaccination-registry.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

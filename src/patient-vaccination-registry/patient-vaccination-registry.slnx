@@ -2,6 +2,6 @@
   <Folder Name="/Data/">
     <Project Path="patient-vaccination-registry.Domain/patient-vaccination-registry.Domain.csproj" Id="67da161c-7039-4b5a-8896-7d41b0297fcf" />
   </Folder>
-  <Project Path="../../../../../../Downloads/MyProyectOfP2/patient-vaccination-registry.Infrastructure/patient-vaccination-registry.Infrastructure.csproj" />
   <Project Path="patient-vaccination-registry.API/patient-vaccination-registry.API.csproj" />
+  <Project Path="patient-vaccination-registry.Infrastructure/patient-vaccination-registry.Infrastructure.csproj" Id="ad5d3237-f9c1-4af1-9e0c-83ae1be1bc36" />
 </Solution>
