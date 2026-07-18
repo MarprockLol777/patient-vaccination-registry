@@ -1,5 +1,7 @@
-using patient_vaccination_registry.API.DATA;
+
 using Microsoft.EntityFrameworkCore;
+using patient_vaccination_registry.Infrastructure.Context;
+using patient_vaccination_registry.Infrastructure.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<DataContext>(options =>
@@ -8,6 +10,11 @@ builder.Services.AddDbContext<DataContext>(options =>
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<PersonRepository>();
+builder.Services.AddScoped<VaccineRepository>();
+builder.Services.AddScoped<DriveRepository>();
+builder.Services.AddScoped<ApplicationRepository>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
