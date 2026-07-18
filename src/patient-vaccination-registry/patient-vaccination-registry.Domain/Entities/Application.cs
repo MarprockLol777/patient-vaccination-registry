@@ -1,8 +1,9 @@
-﻿namespace patient_vaccination_registry.API.Models.Entities
+﻿using patient_vaccination_registry.Domain.Core;
+
+namespace patient_vaccination_registry.Domain.Entities
 {
-    public class Application
+    public class Application : BaseEntity
     {
-        public int Id { get; set; }
         public int PersonId { get; set; }
         public int VaccineId { get; set; }
         public int DriveId { get; set; }

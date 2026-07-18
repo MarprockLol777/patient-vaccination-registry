@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using patient_vaccination_registry.API.Models.Entities;
+using patient_vaccination_registry.Domain.Entities;
 
 namespace patient_vaccination_registry.API.DATA
 {

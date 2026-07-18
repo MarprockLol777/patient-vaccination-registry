@@ -1,8 +1,9 @@
-﻿namespace patient_vaccination_registry.API.Models.Entities
+﻿using patient_vaccination_registry.Domain.Core;
+
+namespace patient_vaccination_registry.Domain.Entities
 {
-    public class Vaccine
+    public class Vaccine : BaseEntity
     {
-        public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string? Manufacturer { get; set; }
         public string? Batch { get; set; }
