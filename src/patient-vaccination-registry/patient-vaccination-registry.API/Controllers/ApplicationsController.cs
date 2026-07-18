@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using patient_vaccination_registry.API.DATA;
 using patient_vaccination_registry.API.Models.Dtos;
 using patient_vaccination_registry.Domain.Entities;
+using patient_vaccination_registry.Infrastructure.Context;
 
 
 namespace patient_vaccination_registry.API.Controllers

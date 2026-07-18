@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using patient_vaccination_registry.Domain.Entities;
 
-namespace patient_vaccination_registry.API.DATA
+namespace patient_vaccination_registry.Infrastructure.Context 
 {
     public class DataContext : DbContext
     {
