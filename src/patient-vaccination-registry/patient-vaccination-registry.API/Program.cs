@@ -1,5 +1,6 @@
 
 using Microsoft.EntityFrameworkCore;
+using patient_vaccination_registry.Application.Services;
 using patient_vaccination_registry.Infrastructure.Context;
 using patient_vaccination_registry.Infrastructure.Repositories;
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,11 @@ builder.Services.AddScoped<PersonRepository>();
 builder.Services.AddScoped<VaccineRepository>();
 builder.Services.AddScoped<DriveRepository>();
 builder.Services.AddScoped<ApplicationRepository>();
+
+builder.Services.AddScoped<PersonService>();
+builder.Services.AddScoped<VaccineService>();
+builder.Services.AddScoped<DriveService>();
+builder.Services.AddScoped<ApplicationService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

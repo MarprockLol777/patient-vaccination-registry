@@ -1,32 +1,31 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using patient_vaccination_registry.API.Models.Dtos;
-using patient_vaccination_registry.Domain.Entities;
-using patient_vaccination_registry.Infrastructure.Context;
+using patient_vaccination_registry.Application.Models.Dtos;
+using patient_vaccination_registry.Application.Services;
 
 namespace patient_vaccination_registry.API.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
-    public class PersonsController: ControllerBase
+    [Route("api/persons")]
+    public class PersonsController : ControllerBase
     {
-        private readonly DataContext _context;
+        private readonly PersonService _personService;
 
-        public PersonsController(DataContext context)
+        public PersonsController(PersonService personService)
         {
-            _context = context;
+            _personService = personService;
         }
 
         [HttpGet] // GET: api/persons
-        public ActionResult<IEnumerable<Person>> GetAll()
+        public ActionResult GetAll()
         {
-            var persons = _context.Persons.ToList();
+            var persons = _personService.GetAll();
             return Ok(persons);
         }
 
         [HttpGet("{id}")] // GET: api/persons/5
-        public ActionResult<Person> GetById(int id)
+        public ActionResult GetById(int id)
         {
-            var person = _context.Persons.FirstOrDefault(p => p.Id == id);
+            var person = _personService.GetById(id);
             if (person == null)
             {
                 return NotFound();
@@ -35,58 +34,35 @@ namespace patient_vaccination_registry.API.Controllers
         }
 
         [HttpPost] // POST: api/persons
-        public ActionResult<int> Create(CreatePersonDto request)
+        public ActionResult Create(CreatePersonDto request)
         {
             if (string.IsNullOrWhiteSpace(request.Name))
             {
                 return BadRequest("Name of person is required.");
             }
-
-            var person = new Person
-            {
-                Name = request.Name,
-                IdNumber = request.IdNumber,
-                BirthDate = request.BirthDate,
-                IsActive = true
-            };
-
-            _context.Persons.Add(person);
-            _context.SaveChanges();
-            return Ok(new { id = person.Id });
+            var id = _personService.Create(request);
+            return Ok(new { id });
         }
 
         [HttpPut("{id}")] // PUT: api/persons/5
         public IActionResult Update(int id, UpdatePersonDto request)
         {
-            var existing = _context.Persons.FirstOrDefault(p => p.Id == id);
-            if (existing == null)
+            var result = _personService.Update(id, request);
+            if (!result)
             {
                 return NotFound();
             }
-
-            existing.Name = request.Name;
-            existing.IdNumber = request.IdNumber;
-            existing.BirthDate = request.BirthDate;
-            existing.IsActive = request.IsActive;
-
-            _context.Persons.Update(existing);
-            _context.SaveChanges();
-
             return NoContent();
         }
 
         [HttpDelete("{id}")] // DELETE: api/persons/5
         public IActionResult Delete(int id)
         {
-            var existing = _context.Persons.FirstOrDefault(p => p.Id == id);
-            if (existing == null)
+            var result = _personService.Delete(id);
+            if (!result)
             {
                 return NotFound();
             }
-
-            _context.Persons.Remove(existing);
-            _context.SaveChanges();
-
             return NoContent();
         }
     }
