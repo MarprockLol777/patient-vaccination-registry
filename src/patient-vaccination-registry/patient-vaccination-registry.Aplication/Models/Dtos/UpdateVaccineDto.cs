@@ -1,4 +1,4 @@
-﻿namespace patient_vaccination_registry.API.Models.Dtos
+﻿namespace patient_vaccination_registry.Application.Models.Dtos
 {
     public class UpdateVaccineDto
     {

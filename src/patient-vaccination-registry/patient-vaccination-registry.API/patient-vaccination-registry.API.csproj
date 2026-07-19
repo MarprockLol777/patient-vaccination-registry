@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\patient-vaccination-registry.Infrastructure\patient-vaccination-registry.Infrastructure.csproj" />
+    <ProjectReference Include="..\patient-vaccination-registry.Aplication\patient-vaccination-registry.Application.csproj" />
   </ItemGroup>
 
 </Project>
