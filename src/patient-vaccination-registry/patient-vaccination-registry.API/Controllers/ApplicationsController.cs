@@ -49,7 +49,7 @@ namespace patient_vaccination_registry.API.Controllers
                 return BadRequest("DriveId must be provided and positive.");
             }
             var id = _applicationService.Create(request);
-            return Ok(new { id }); 
+            return Ok(new { id });
         }
 
         [HttpPut("{id}")] // PUT: api/applications/5
