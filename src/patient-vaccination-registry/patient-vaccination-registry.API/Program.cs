@@ -10,6 +10,16 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 // Add services to the container.
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:60996")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<PersonRepository>();
@@ -24,8 +34,10 @@ builder.Services.AddScoped<ApplicationService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-    
+
 var app = builder.Build();
+
+app.UseCors("AllowFrontend");
 
 // Configure the HTTP request pipeline.
 
